@@ -4,12 +4,18 @@
 SCRIPT_DIR=$(dirname $0)
 cd ${SCRIPT_DIR}
 
+# Be sure we run as root.
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1
+fi
+
 # Default settings.
 SCRIPT_BASE=$(pwd)
 WEBUSER=nighter
 COLORS=${COLORS:-"true"}
 
-# Check if we want to disable colors
+# If we want to disable color output.
 if [ "${1}" == "--nocolor" ]; then
     COLORS="false"
 fi
@@ -21,6 +27,7 @@ function logprint()
 {
     printf "[output] %s\n" "$@"
 }
+
 
 function print_plain_usage()
 {
@@ -81,8 +88,8 @@ function save_settings()
 function initialize()
 {
     docker pull nighter/centos7-omd
-    docker run -d -p 5000:5000 --name centos7-omd -v ${SCRIPT_BASE}/checks:/opt/omd/sites/prod/share/check_mk/checks -v ${SCRIPT_BASE}/plugins:/usr/share/check-mk-agent/plugins nighter/centos7-omd    
-    docker exec centos7-omd /usr/sbin/xinetd -D
+    docker run -d -p 5000:5000 --name centos7-omd-workspace -v ${SCRIPT_BASE}/checks:/opt/omd/sites/prod/share/check_mk/checks -v ${SCRIPT_BASE}/plugins:/usr/share/check-mk-agent/plugins nighter/centos7-omd    
+    docker exec centos7-omd-workspace /usr/sbin/xinetd -D
     logprint "Initialized"
 }
 
@@ -111,7 +118,7 @@ function run_web()
 function run_command()
 {
    if [ "$@" ]; then
-	cmd="docker exec centos7-omd su - prod -c \"./bin/cmk $@\""
+	cmd="docker exec centos7-omd-workspace su - prod -c \"./bin/cmk $@\""
         echo ""
         echo "[EXECUTES] cmk $@"
         echo ""
@@ -120,7 +127,7 @@ function run_command()
        echo "Enter cmk arguments"
        echo -n "➜ "
        read ARGUMENTS
-       cmd="docker exec centos7-omd su - prod -c \"./bin/cmk ${ARGUMENTS}\""
+       cmd="docker exec centos7-omd-workspace su - prod -c \"./bin/cmk ${ARGUMENTS}\""
        echo ""
        echo "[EXECUTES] cmk ${ARGUMENTS}"
        echo ""
@@ -199,7 +206,7 @@ function main()
             ;;
 
             e|enter)
-		docker exec -it centos7-omd bash
+		docker exec -it centos7-omd-workspace bash
             ;;
 
             u|uninstall)
