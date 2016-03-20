@@ -54,6 +54,7 @@ mikael.kall@unibet.com
 
  b|boot        Boot containers
  u|uninstall   Stop and uninstall all containers 
+ e|enter       Start a shell in the container.
 
 EOT
 }
@@ -195,6 +196,10 @@ function main()
 
             o|reload)
                 run_command "-O"
+            ;;
+
+            e|enter)
+		docker exec -it centos7-omd bash
             ;;
 
             u|uninstall)

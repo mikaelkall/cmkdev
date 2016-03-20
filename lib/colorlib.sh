@@ -140,6 +140,7 @@ function print_usage()
  color.default ""
  color.red "${BOLD}b${RESET}${LIGHTWHITE}|${CYAN}boot${LIGHTWHITE}        Boot containers"
  color.red "${BOLD}u${RESET}${LIGHTWHITE}|${CYAN}uninstall${LIGHTWHITE}   Stop and uninstall all containers" 
+ color.red "${BOLD}e${RESET}${LIGHTWHITE}|${CYAN}enter${LIGHTWHITE}       Start a shell in the container"
  color.default ""
 
 }
