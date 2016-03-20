@@ -111,6 +111,7 @@ function color.lightwhite()
 
 function print_usage()
 {
+    clear
     color.green "${BOLD}
                 __       __   
 .----.--------.|  |--.--|  |.-----.--.--.
