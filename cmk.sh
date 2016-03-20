@@ -12,8 +12,7 @@ function print_usage()
 {
 clear
 cat <<EOT
-
-                __       __              
+                __       __   
 .----.--------.|  |--.--|  |.-----.--.--.
 |  __|        ||    <|  _  ||  -__|  |  |
 |____|__|__|__||__|__|_____||_____|\___/ 
@@ -45,12 +44,11 @@ mikael.kall@unibet.com
 EOT
 }
 
-
 function save_settings()
 {
     echo ""
     echo "Enter name for save checks."
-    echo -n "=> "
+    echo -n "➜ "
     read filename	
     if [ -n ${filename} ]; then
 	datum=$(date +'%Y%d%H%m')
@@ -105,7 +103,7 @@ function run_command()
 
    else
        echo "Enter cmk arguments"
-       echo -n "=> "
+       echo -n "➜ "
        read ARGUMENTS
        cmd="docker exec centos7-omd su - prod -c \"./bin/cmk ${ARGUMENTS}\""
        echo ""
@@ -124,7 +122,7 @@ function main()
     while :
     do
         print_usage
-	echo -n "=> "	
+	echo -n "➜ "	
         read -n1 opt
 
         case "${opt}" in
@@ -203,8 +201,3 @@ NAME=$(basename "$0")
 if [ "$NAME" == "cmk.sh" ]; then
     main $@
 fi
-
-
- 
-
-
