@@ -1,14 +1,28 @@
 #!/bin/bash
 
+# Jump to script folder.
+SCRIPT_DIR=$(dirname $0)
+cd ${SCRIPT_DIR}
+
+# Default settings.
 SCRIPT_BASE=$(pwd)
 WEBUSER=nighter
+COLORS=${COLORS:-"true"}
+
+# Check if we want to disable colors
+if [ "${1}" == "--nocolor" ]; then
+    COLORS="false"
+fi
+
+# Load color library.
+. lib/colorlib.sh
 
 function logprint()
 {
     printf "[output] %s\n" "$@"
 }
 
-function print_usage()
+function print_plain_usage()
 {
 clear
 cat <<EOT
@@ -121,7 +135,12 @@ function main()
 {
     while :
     do
-        print_usage
+	if [ ${COLORS} == "true" ]; then
+            print_usage
+	else
+	    print_plain_usage
+	fi
+
 	echo -n "➜ "	
         read -n1 opt
 
@@ -185,8 +204,6 @@ function main()
             s|save)
                 save_settings
             ;;
-
-
 
 	esac
     done
