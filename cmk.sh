@@ -5,7 +5,7 @@ WEBUSER=nighter
 
 function logprint()
 {
-    printf "[CMKDEV] %s\n" "$@"
+    printf "[output] %s\n" "$@"
 }
 
 function print_usage()
@@ -24,23 +24,44 @@ mikael.kall@unibet.com
  w|web		Start webbrowser
  p|plugin	Edit plugin
  c|check	Edit check
+ s|save		Save checks
  q|quit         Quit application
 
  Check_mk
  
- x|execute     Run cmk command
+ x|execute     Freetype cmk command
  i|inventory   Inventory server
  r|run	       Run check
  d|dump	       Dump checks
- o|reload      Reload nagios 
- h|help	       View help
+ l|list	       List checks
+ o|reload      Nagios reload 
+ h|help	       View cmk help
 
  Docker
 
- s|setup        Setup containers
- u|uninstall    Stop and uninstall all containers 
+ b|boot        Boot containers
+ u|uninstall   Stop and uninstall all containers 
 
 EOT
+}
+
+
+function save_settings()
+{
+    echo ""
+    echo "Enter name for save checks."
+    echo -n "=> "
+    read filename	
+    if [ -n ${filename} ]; then
+	datum=$(date +'%Y%d%H%m')
+	cp ${SCRIPT_BASE}/plugins/checkplugin ~/plugin_${filename}.${datum}
+	cp ${SCRIPT_BASE}/checks/checkplugin.py ~/checks_${filename}.${datum}
+	logprint "Saved ~/plugin_${filename}.${datum}"
+	logprint "Saved ~/checks_${filename}.${datum}"
+        echo -en "\n*** Press any key to return *** "
+        read
+    fi
+
 }
 
 
@@ -83,7 +104,8 @@ function run_command()
         echo ""
 
    else
-       echo -n "[CMD]: "
+       echo "Enter cmk arguments"
+       echo -n "=> "
        read ARGUMENTS
        cmd="docker exec centos7-omd su - prod -c \"./bin/cmk ${ARGUMENTS}\""
        echo ""
@@ -102,7 +124,7 @@ function main()
     while :
     do
         print_usage
-	echo -n "[CMKDEV]: "	
+	echo -n "=> "	
         read -n1 opt
 
         case "${opt}" in
@@ -130,7 +152,7 @@ function main()
 	        run_command
             ;;
 
-            s|setup)
+            b|boot)
                 initialize
             ;;
 
@@ -146,6 +168,10 @@ function main()
                 run_command "--debug -nv testhost"
             ;;
 
+            l|list)
+                run_command "-L"
+            ;;
+
             h|help)
                 run_command "--help"
             ;;
@@ -157,6 +183,11 @@ function main()
             u|uninstall)
                 docker_uninstall
             ;;
+
+            s|save)
+                save_settings
+            ;;
+
 
 
 	esac
